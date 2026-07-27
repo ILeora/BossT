@@ -1,0 +1,28 @@
+name: BDO Boss Timer
+
+on:
+  schedule:
+    # Запуск в начале каждого часа и на 15, 30, 45 минутах
+    - cron: '0,15,30,45 * * * *'
+  workflow_dispatch: # Позволит запускать вручную кнопкой
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Bot
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+        run: python bot.py
