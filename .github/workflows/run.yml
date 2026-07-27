@@ -1,14 +1,10 @@
 name: BDO Boss Timer
 
 on:
-  push:
-    branches:
-      - main
-
   schedule:
-    - cron: '7,22,37,52 * * * *'
-
-  workflow_dispatch:
+    # Запуск в начале каждого часа и на 15, 30, 45 минутах
+    - cron: '0,15,30,45 * * * *'
+  workflow_dispatch: # Позволяет запускать вручную кнопкой
 
 jobs:
   run-bot:
