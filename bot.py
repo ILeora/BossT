@@ -57,7 +57,7 @@ class BossTimerBot(discord.Client):
                 next_boss_time = first_time
                 next_boss_name = schedule[next_day][first_time]
 
-        new_name = f"🔒 {next_boss_time} | {next_boss_name}"
+        new_name = f"⏱ {next_boss_time} | {next_boss_name}"
 
         # Обновляем имя, только если оно изменилось (защита от лимитов Discord API)
         if channel.name != new_name:
