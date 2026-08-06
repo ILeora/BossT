@@ -50,8 +50,8 @@ class BossTimerBot(discord.Client):
                     next_boss_time = first_time
                     next_boss_name = schedule[next_day][first_time]
 
-            # Формируем имя без лишних иконок
-            new_name = f"{next_boss_time}  {next_boss_name}"
+            # Формируем название: "18:00 › Кзарка..." (без лишних знаков в коде)
+            new_name = f"{next_boss_time} {next_boss_name}".strip()
 
             # Обновляем имя, только если оно изменилось
             if channel.name != new_name:
