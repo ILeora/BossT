@@ -13,13 +13,29 @@ MOSCOW_TZ = timezone(timedelta(hours=3))
 class BossTimerBot(discord.Client):
     async def on_ready(self):
         print(f'Бот {self.user} успешно запущен!')
+        print(f"Ищем канал с ID: {CHANNEL_ID}")
         
+        # --- ДИАГНОСТИКА: Список серверов и каналов ---
+        print("\n=== ДОСТУПНЫЕ СЕРВЕРЫ И КАНАЛЫ ===")
+        for guild in self.guilds:
+            print(f"Сервер: {guild.name} (ID: {guild.id})")
+            for ch in guild.channels:
+                if ch.id == CHANNEL_ID:
+                    print(f"  └─ НАЙДЕН НУЖНЫЙ КАНАЛ: {ch.name} (Тип: {type(ch)})")
+        print("===================================\n")
+
         try:
-            # 1. Получаем канал
-            channel = self.get_channel(CHANNEL_ID)
-            if not channel:
-                print("Канал не найден. Проверьте ID канала в Secrets.")
+            # 1. Запрашиваем канал через API
+            try:
+                channel = await self.fetch_channel(CHANNEL_ID)
+                print(f"Успешно получен канал через fetch: {channel.name}")
+            except Exception as e:
+                print(f"❌ Ошибка при попытке fetch_channel (бот не видит канал): {e}")
                 return
+
+            # Проверяем права бота в этом канале
+            permissions = channel.permissions_for(channel.guild.me)
+            print(f"Права бота в канале -> Manage Channel: {permissions.manage_channels}, View Channel: {permissions.view_channel}")
 
             # 2. Загружаем расписание
             try:
@@ -37,7 +53,7 @@ class BossTimerBot(discord.Client):
             next_boss_time = None
             next_boss_name = None
 
-            # Ищем босса на сегодня, который будет позже текущего времени
+            # Ищем босса на сегодня
             if current_day in schedule:
                 day_schedule = schedule[current_day]
                 for b_time in sorted(day_schedule.keys()):
@@ -46,7 +62,7 @@ class BossTimerBot(discord.Client):
                         next_boss_name = day_schedule[b_time]
                         break
 
-            # Если на сегодня боссов больше нет, ищем первого босса на завтра
+            # Если на сегодня боссов нет, ищем на завтра
             if not next_boss_time:
                 next_day = str((int(current_day) + 1) % 7)
                 if next_day in schedule and schedule[next_day]:
@@ -54,21 +70,21 @@ class BossTimerBot(discord.Client):
                     next_boss_time = first_time
                     next_boss_name = schedule[next_day][first_time]
 
-            # Формируем новое имя (уже с твоей новой иконкой ⏱)
-            new_name = f" {next_boss_time}  {next_boss_name}"
+            # Формируем новое имя
+            new_name = f"⏱ {next_boss_time} {next_boss_name}"
 
-            # 4. Обновляем имя, только если оно изменилось
+            # 4. Обновляем имя
             if channel.name != new_name:
+                print(f"Пытаемся изменить имя с '{channel.name}' на '{new_name}'...")
                 await channel.edit(name=new_name)
                 print(f"Имя канала успешно изменено на: {new_name}")
             else:
                 print("Имя канала уже актуально, обновление не требуется.")
 
         except Exception as e:
-            print(f"Произошла непредвиденная ошибка: {e}")
+            print(f"❌ Произошла ошибка во время работы: {e}")
             
         finally:
-            # 5. Самый важный шаг: закрываем сессию бота, чтобы завершить GitHub Action
             print("Завершение работы скрипта...")
             await self.close()
 
