@@ -2,7 +2,7 @@ name: BDO Boss & Time Bot
 
 on:
   schedule:
-    - cron: '0,15,30,45 * * * *'
+    - cron: '21,41 * * * *'
   workflow_dispatch:
   repository_dispatch:
     types: [run-cron]
