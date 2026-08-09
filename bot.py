@@ -42,9 +42,9 @@ def get_day_night_status(now_dt):
     time_str = next_change_dt.strftime("%H.%M")
 
     if is_day:
-        return f"🌞| Ночь в {time_str}"
+        return f"🌞› Ночь в {time_str}"
     else:
-        return f"🌙| День в {time_str}"
+        return f"🌙› День в {time_str}"
 
 
 def get_next_boss_status(now_dt):
