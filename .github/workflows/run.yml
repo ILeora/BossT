@@ -1,4 +1,4 @@
-name: BDO Boss Timer
+name: BDO Boss & Time Bot
 
 on:
   schedule:
@@ -26,4 +26,5 @@ jobs:
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+          DISCORD_TIME_CHANNEL_ID: ${{ secrets.DISCORD_TIME_CHANNEL_ID }}
         run: python bot.py
